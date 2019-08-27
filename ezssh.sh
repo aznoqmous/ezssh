@@ -19,7 +19,7 @@ then
   port='22'
 fi
 
-default_key_name='ezssh_'$host'_rsa'
+default_key_name='ezssh_rsa'
 read -p "Chose a name for the generated keyfile (default to '$default_key_name'):" key_name
 if [[ -z $key_name ]]
 then
@@ -34,18 +34,24 @@ then
 fi
 
 key_file="$key_file_dir/$key_name"
-mkdir -p "$key_file_dir"
-echo "" > "$key_name"
-yes | ssh-keygen -t rsa -b 2048 -N "" -C "$key_name@ezssh" -f "$key_name" > /dev/null
-mv "$key_name" "$key_file"
-mv "$key_name.pub" "$key_file.pub"
-chmod 700 "$key_file"
+if [[ -f $key_file ]]
+then
+  echo "Key already exists"
+else
+  mkdir -p "$key_file_dir"
+  echo "" > "$key_name"
+  user_host=$(uname -n)
+  yes | ssh-keygen -t rsa -b 2048 -N "" -C "$USER@$user_host($key_name)" -f "$key_name" > /dev/null
+  mv "$key_name" "$key_file"
+  mv "$key_name.pub" "$key_file.pub"
+  chmod 700 "$key_file"
+  echo "Created private key $key_file"
+  echo "Created public key $key_file.pub"
+fi
 
 key=$(cat "$key_file")
 pub_key=$(cat "$key_file.pub")
 
-echo "Created private key $key_file"
-echo "Created public key $key_file.pub"
 printf "Here is your public key : \n$pub_key\n"
 
 default_config_file="$HOME/.ssh/config"
