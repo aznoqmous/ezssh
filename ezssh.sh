@@ -52,7 +52,7 @@ fi
 key=$(cat "$key_file")
 pub_key=$(cat "$key_file.pub")
 
-printf "Here is your public key : \n$pub_key\n"
+
 
 default_config_file="$HOME/.ssh/config"
 read -p "Chose where to save the config (default to '$default_config_file'):" config_file
@@ -66,9 +66,14 @@ echo "    User $user" >> $config_file
 echo '    IdentityFile "'$key_file'"' >> $config_file
 echo "    Port $port" >> $config_file
 
+echo "Here is your actual ssh config file ($config_file):"
+cat $config_file
+
+printf "Here is your public key : \n$pub_key\n"
+echo "Copy it at the end of '$host' authorized_keys file"
 
 ### WRITE PUB TO SERVER AND RESTART
-# default_known_hosts_file="~/.ssh/known_hosts"
+# default_known_hosts_file="~/.ssh/authorized_keys"
 # read -p "Chose the destination known_hosts or authorized_keys file (default to '$default_known_hosts_file'):" known_hosts_file
 # if [[ -z $known_hosts_file ]]
 # then
